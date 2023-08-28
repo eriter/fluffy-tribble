@@ -31,6 +31,7 @@ var Dashboard = {
     el.querySelector('.duration').innerText = Utils.formatTime(media.duration);
     el.querySelector('.count').innerText = '?';
     el.setAttribute('data-hashed-id', media.hashed_id);
+    el.querySelector('.visibility-toggle').setAttribute('data-hashed-id', media.hashed_id);
 
     this.renderTags(el, ['tag-1', 'tag-2']);
 
@@ -68,7 +69,25 @@ var Dashboard = {
     'click',
     function(event) {
       if (event && event.target.matches('.visibility-toggle')) {
-        /* toggle visibility */
+        const hashedId = event.target.dataset.hashedId;
+        const currentVisibility = event.target.classList.contains('media--visible');
+        const toggleButton = event.target;
+
+        axios.patch(`/api/videos/${hashedId}/visibility`, {
+          visibility: !currentVisibility
+        })
+        .then((response) => {
+          toggleButton.classList.toggle('media--visible');
+
+          // Toggle the display of the icon
+          const hiddenIcon = toggleButton.querySelector('svg.media--hidden');
+          const visibleIcon = toggleButton.querySelector('svg.media--visible');
+          hiddenIcon.style.display = currentVisibility ? 'block' : 'none';
+          visibleIcon.style.display = currentVisibility ? 'none' : 'block';
+        })
+        .catch((error) => {
+          console.error('Error updating visibility:', error);
+        });
       }
 
       if (event && event.target.matches('.tag-button')) {
