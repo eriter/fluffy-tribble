@@ -7,11 +7,11 @@ const PORT = process.env.PORT || 8000;
 app.use(express.static('public'));
 
 // routes
-app.get('/', (req, res) => {
+app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
-app.get('/playlist', (req, res) => {
+app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'playlist.html'));
 });
 
