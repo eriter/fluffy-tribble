@@ -6,6 +6,8 @@ const PORT = process.env.PORT || 8000;
 // Serve our static assets
 app.use(express.static('public'));
 
+app.use(express.json());
+
 // routes
 app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
