@@ -115,17 +115,11 @@ function applyVisibilityClasses() {
     const visibleSVG = toggleButton.querySelector('.media--visible');
     const hiddenSVG = toggleButton.querySelector('.media--hidden');
     
-    if (videoVisibility[hashedId]) {
-      visibleSVG.style.display = 'block';
-      hiddenSVG.style.display = 'none'; 
-      toggleButton.classList.remove('media--hidden');
-      toggleButton.classList.add('media--visible');
-      console.log('adding visibility')
-    } else {
-      visibleSVG.style.display = 'none';
-      hiddenSVG.style.display = 'block';
-      toggleButton.classList.remove('media--visible');
-      toggleButton.classList.add('media--hidden');
-    }
+   
+    visibleSVG.style.display = videoVisibility[hashedId] ? 'block' : 'none';
+    hiddenSVG.style.display = videoVisibility[hashedId] ? 'none' : 'block';
+
+    toggleButton.classList.remove('media--hidden', 'media--visible');
+    toggleButton.classList.add(videoVisibility[hashedId] ? 'media--visible' : 'media--hidden');
   });
 };
