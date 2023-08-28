@@ -15,8 +15,18 @@ app.get('/playlist', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'playlist.html'));
 });
 
-// endpoint to come
-// ...
+// In-memory data structure to track visibility
+const videoVisibility = {};
+
+// Update visibility status per video
+app.patch('/api/videos/:hashedId/visibility', (req, res) => {
+  const hashedId = req.params.hashedId;
+  const visibility = req.body.visibility;
+
+  videoVisibility[hashedId] = visibility;
+
+  res.json({ success: true });
+});
 
 // Start the server
 app.listen(PORT, () => {
