@@ -80,7 +80,6 @@ const Dashboard = {
     'click',
     function(event) {
       if (event && event.target.matches('.visibility-toggle')) {
-        const toggleButton = event.target;
         const hashedId = event.target.dataset.hashedId;
         const currentVisibility = event.target.classList.contains('media--visible');
 
