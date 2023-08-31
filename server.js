@@ -5,7 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 const TOKEN = 'be21195231d946b680453e48456d6e806a34c0456b8c13804aa797cb2c560db1';
 
-// In-memory data structures
+// In-memory data structure initialization
 let videoVisibility = {};
 let mediaData = {};
 
@@ -16,7 +16,6 @@ app.use(express.static('public'));
 app.use(express.json());
 
 // Routes
-
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'playlist.html'));
 });
