@@ -41,6 +41,8 @@ Start the app with `node server.js` from the root directory. You'll find the pla
 
 To test the hide/show functionality, please mark a video or two as hidden on the dashboard page and check that they are subsequently hidden from the playlist within the same server session.
 
+Note that I've retained the initial skeleton for comparison, but my changes are largely in ./public and ./server.js
+
 
 ## Architectural overview
 
@@ -56,11 +58,11 @@ Broadly speaking this is a naive approach, biased towards speed of delivery and 
 
 ## Performance characteristics
 
-Both pages render on the order of half a second in my local environment, but I'm a little leary of all the work I've had to do in event listeners to get to this MVP. I'm sure there are performance gains to be had in both minimizing api calls and perhaps refined encapsulation of the event listener logic.
+Both pages render on the order of half a second in my local environment, but I'm a little leary of all the work I've had to do in event listeners to get to this MVP. I'm sure there are performance gains to be had in both minimizing api calls and perhaps refined encapsulation of the event listener logic. Some of the DOM manipulation, especially on the playlist page is probably inefficient and/or duplicitive, I would guess.
 
 ## Things I would do if I had more time/Things I would never do in production
 
-- A test suite! The acceptance criteria here are precise and interrelated, and while unit testing would of course be a baseline, I’d also love to have something browser driven like cypress or playwright for coverage, particularly in the context of the playlist behavior.
+- A test suite! The acceptance criteria here are precise and interrelated, and while unit testing would of course be a baseline, I’d also love to have something browser driven like cypress or playwright for coverage, particularly in the context of the playlist transition behavior.
 
 - Secure storage for the API key: some kind of secret management would be table stakes in a prod environment (yes, it’s a read-only key, but still, security is a practice)
 
@@ -70,7 +72,7 @@ Both pages render on the order of half a second in my local environment, but I'm
 
 - A db: handling the relevant values in-memory did accelerate my path into working through the functional requirements, but it was ultimately shortsighted. I could have used a db console to work through the SQL/db modeling section.
 
-- Similarly to the above, I plunged into a node implementation on the theory that this would be a relatively lightweight piece of software and it couldn’t hurt to keep my brain in JS mode throughout development. Rails might have helped me avoid some sticky bits where I was unfamiliar with express configuration, and saved me time to focus on what matters. And it would almost certainly have nudged me towards a db like sqlite which would have utility elsewhere in the take-home.
+- Similarly to the above, I plunged into a node implementation on the theory that this would be a relatively lightweight piece of software and it couldn’t hurt to keep my brain in JS mode throughout development. Rails might have helped me avoid some sticky bits where I was unfamiliar with express configuration, and saved me time to focus on what matters. And it would have nudged me towards a db like sqlite which would have utility elsewhere in the take-home.
 
 - Encapsulation/separation of concerns: I found myself almost entirely working in the existing starter files (once copied into my little node app). In a production setting where we might be expanding and maintaining this code for a while I would probably extract the parallel video and visibility fetching calls to a service object, in part to keep that logic in sync and in part to make playlist.js and dashboard.js easier to read and focused on their particular interfaces
 
@@ -272,3 +274,5 @@ ORDER BY tag_count DESC, videos.created_at DESC
 LIMIT 1;
 
 ```
+
+Thank you for your time and care in reviewing this take home, I really enjoyed working on it and I hope I get the opportunity to discuss it with you!
