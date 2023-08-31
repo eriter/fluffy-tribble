@@ -7,7 +7,7 @@ let visibleVideos = [];
 let playlistLinksContainer = {};
 
 const Playlist = {
-  renderMedia: function(media, isPlaying = false) {
+  renderMedia: function(media) {
     const template = document.getElementById('media-template');
     const clone = template.content.cloneNode(true);
     const el = clone.children[0];
@@ -16,14 +16,6 @@ const Playlist = {
     el.querySelector('.title').innerText = media.name;
     el.querySelector('.duration').innerText = Utils.formatTime(media.duration);
     el.querySelector('.media-content').setAttribute('href', '#wistia_' + media.hashed_id);
-
-    if (isPlaying) {
-      el.classList.add('media--playing');
-      const playingText = document.createElement('span');
-      playingText.classList.add('playing-text');
-      playingText.innerText = 'Playing';
-      el.querySelector('.media-content').appendChild(playingText);
-    }
 
     document.getElementById('medias').appendChild(el);
   }
@@ -54,9 +46,9 @@ window._wq = window._wq || [];
 
           const firstVisibleVideo = visibleVideos[0];
 
-          Playlist.renderMedia(firstVisibleVideo, true);
+          Playlist.renderMedia(firstVisibleVideo);
           visibleVideos.slice(1).forEach(video => {
-            Playlist.renderMedia(video, false);
+            Playlist.renderMedia(video);
           });
 
           document.querySelector('.wistia_embed').classList
@@ -77,14 +69,11 @@ window._wq = window._wq || [];
                   el => el.getAttribute('href').endsWith(currentVideoId)
                 );
 
-                if (currentPlayingElement) {
-                  currentPlayingElement.classList.add('media--playing');
-                  const playingText = document.createElement('span');
-                  console.log('trying to set playing text', currentPlayingElement);
-                  playingText.classList.add('playing-text');
-                  playingText.innerText = 'Playing';
-                  currentPlayingElement.querySelector('.media-content').appendChild(playingText);
-                }
+                currentPlayingElement.classList.add('media--playing');
+                const playingText = document.createElement('span');
+                playingText.classList.add('playing-text');
+                playingText.innerText = 'Playing';
+                currentPlayingElement.appendChild(playingText);
               });
 
               video.bind('end', () => {
