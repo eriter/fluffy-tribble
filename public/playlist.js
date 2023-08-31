@@ -4,7 +4,6 @@ let mediaData = {};
 let videoVisibility = {};
 let currentVideoIndex = 0;
 let visibleVideos = [];
-let playlistLinksContainer = {};
 
 const Playlist = {
   renderMedia: function(media) {
@@ -41,7 +40,6 @@ window._wq = window._wq || [];
 
           if (visibleVideos.length === 0) {
             console.log('No visible videos.');
-            return;
           }
 
           const firstVisibleVideo = visibleVideos[0];
@@ -64,7 +62,7 @@ window._wq = window._wq || [];
               let currentVideoId = firstVisibleVideo.hashed_id;
               let currentPlayingElement = null;
               video.bind('play', function() {
-                currentVideoId = visibleVideos[currentVideoIndex].hashed_id; 
+                currentVideoId = visibleVideos[currentVideoIndex].hashed_id;
                 currentPlayingElement = Array.from(document.querySelectorAll('a.media-content')).find(
                   el => el.getAttribute('href').endsWith(currentVideoId)
                 );
@@ -90,21 +88,20 @@ window._wq = window._wq || [];
                   let countdownValue = 5;
                   const countdownElement = document.createElement('div');
                   countdownElement.classList.add('countdown');
-                
+
                   const playerContainer = document.querySelector('.wistia_embed');
                   playerContainer.appendChild(countdownElement);
-                
+
                   function updateCountdown() {
                     countdownElement.innerHTML = countdownValue;
                     countdownValue--;
-                  
+
                     if (countdownValue >= 0) {
                       setTimeout(updateCountdown, 1000);
                     } else {
                       countdownElement.remove();
                       currentVideoIndex++;
                       if (currentVideoIndex < visibleVideos.length) {
-                        nextVideoId = visibleVideos[currentVideoIndex].hashed_id
                         currentPlayingElement.classList.add('media--played');
                         document.getElementById('medias').appendChild(currentPlayingElement);
                         nextVideoId = visibleVideos[currentVideoIndex].hashed_id;

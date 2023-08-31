@@ -44,11 +44,6 @@ const Dashboard = {
   closeModal: function() {
     document.querySelector('.modal').classList.remove('modal--open');
   },
-
-  addTag: function() {
-    var el = document.createElement('li');
-    el.querySelector('.tags').appendChild(el);
-  }
 };
 
 (function() {
@@ -87,7 +82,7 @@ const Dashboard = {
           visibility: !currentVisibility
         })
         .then((response) => {
-          videoVisibility[hashedId] = !currentVisibility; 
+          videoVisibility[hashedId] = !currentVisibility;
           applyVisibilityClasses()
         })
         .catch((error) => {
@@ -113,8 +108,8 @@ function applyVisibilityClasses() {
     const hashedId = toggleButton.getAttribute('data-hashed-id');
     const visibleSVG = toggleButton.querySelector('.media--visible');
     const hiddenSVG = toggleButton.querySelector('.media--hidden');
-    
-   
+
+
     visibleSVG.style.display = videoVisibility[hashedId] ? 'block' : 'none';
     hiddenSVG.style.display = videoVisibility[hashedId] ? 'none' : 'block';
 
