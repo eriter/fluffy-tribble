@@ -16,12 +16,13 @@ app.use(express.static('public'));
 app.use(express.json());
 
 // Routes
-app.get('/dashboard', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
-});
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'playlist.html'));
+});
+
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
 
 // Initialize media fetch and set videoVisibility with default values
@@ -55,7 +56,7 @@ app.patch('/api/videos/:hashedId/visibility', (req, res) => {
   const visibility = req.body.visibility;
 
   // In a prod environment we might do some defensive validation here,
-  // checking visibility's type and that a corresponding video exists for the hashedId
+  // checking visibility's type and that a corresponding video exists for the hashedId, for example
 
   videoVisibility[hashedId] = visibility;
 
