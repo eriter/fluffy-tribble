@@ -36,3 +36,27 @@ header {
   display: flex;
   align-items: center;
 }
+
+.media--playing .playing-text {
+  display: block;
+  background-color: #443f3f;
+  color: #fff;
+  padding: 4px;
+  font-size: 12px;
+}
+
+.media--played {
+  margin-bottom: 12px;
+}
+
+.countdown {
+  padding: 20px;
+  top: 20px;
+  right: 20px;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 24px;
+  text-align: center;
+}
