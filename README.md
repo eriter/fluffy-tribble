@@ -50,15 +50,15 @@ I've leveraged the existing frontend code, expanded and modified to meet the fea
 
 I opted for in-memory solutions to data persistence challenges, you'll see this discussed later in things I'd do differently.
 
-Our api calls include fetching the project's playlist from Wistia just before server start, GETs to fetch video visibility (defaulting to true for all videos on app start) and media data for the playlist contents, and a PATCH to update a particular video's visibility boolean.
+Our api calls include fetching the project's playlist from Wistia just before server start, GETs to fetch video visibility (defaulting to true for all videos on app start) and media data for the playlist contents, and a PATCH endpoint to update a particular video's visibility boolean.
 
-The _wq array is used to manage Wistia player instances and options.
+The `_wq` array is used to manage Wistia player instances and options.
 
 Broadly speaking this is a naive approach, biased towards speed of delivery and intended to flesh out an MVP with a vertical slice of meaningful functionality.
 
 ## Performance characteristics
 
-Both pages render on the order of half a second in my local environment, but I'm a little leary of all the work I've had to do in event listeners to get to this MVP. I'm sure there are performance gains to be had in both minimizing api calls and perhaps refined encapsulation of the event listener logic. Some of the DOM manipulation, especially on the playlist page is probably inefficient and/or duplicitive, I would guess.
+Both pages render on the order of half a second in my local environment, but I'm a little leary of all the work I've had to do in event listeners to get to this MVP. I'm sure there are performance gains to be had in both minimizing api calls and refinement of the event listener logic. Some of the DOM manipulation, especially on the playlist page is probably inefficient and/or duplicitive, I would guess.
 
 ## Things I would do if I had more time/Things I would never do in production
 
@@ -68,13 +68,15 @@ Both pages render on the order of half a second in my local environment, but I'm
 
 - Fetching the medias just before server start is a fragile model for relying on an external API. Some kind of back-off retry logic or alternate approach would be necessary for a prod service.
 
-- I believe that I was premature in my extraction of applyVisibilityClasses. The visibility checking/setting behavior on page load is not the same as clicking a single video’s visibility button, distinct logic for each would be more efficient and maintainable.
+- I believe that I was premature in my extraction of applyVisibilityClasses in dashboard.js. The visibility checking/setting behavior on page load is not the same as clicking a single video’s visibility button, distinct logic for each would be more efficient and maintainable.
 
 - A db: handling the relevant values in-memory did accelerate my path into working through the functional requirements, but it was ultimately shortsighted. I could have used a db console to work through the SQL/db modeling section.
 
-- Similarly to the above, I plunged into a node implementation on the theory that this would be a relatively lightweight piece of software and it couldn’t hurt to keep my brain in JS mode throughout development. Rails might have helped me avoid some sticky bits where I was unfamiliar with express configuration, and saved me time to focus on what matters. And it would have nudged me towards a db like sqlite which would have utility elsewhere in the take-home.
+- Similarly to the above, I plunged into a node implementation on the theory that this would be a relatively lightweight piece of software and it couldn’t hurt to keep my brain in JS mode throughout development. Rails might have helped me avoid some sticky bits where I was unfamiliar with express configuration, and saved me time to focus on what matters.
 
-- Encapsulation/separation of concerns: I found myself almost entirely working in the existing starter files (once copied into my little node app). In a production setting where we might be expanding and maintaining this code for a while I would probably extract the parallel video and visibility fetching calls to a service object, in part to keep that logic in sync and in part to make playlist.js and dashboard.js easier to read and focused on their particular interfaces
+- Encapsulation/separation of concerns: I found myself almost entirely working in the existing starter files (once copied into my little node app). In a production setting where we might be expanding and maintaining this code for a while I would probably extract the parallel video and visibility fetching calls to a service object, in part to keep that logic in sync and in part to make playlist.js and dashboard.js easier to read and focused on their particular interfaces.
+
+- Hunting down errors: I'm seeing a cluster of JS errors on video transition that don't seem to impact user experience, but suggest that I'm sometimes pushing options objects onto undefined players. I would want to chase this down rather than leave the console cluttered with errors in an ongoing project.
 
 ## Things I didn’t worry about
 
@@ -88,7 +90,7 @@ Both pages render on the order of half a second in my local environment, but I'm
 
 - Linting. I’ve made some changes out of habit (I was drilled to prefer let and const to var), but without knowing the Wistia org’s standards I haven't attempted to implement a linter. My sincere apologies if this has produced awkward formatting, or if silly mistakes slipped in that a linter would have caught.
 
-- Edgecase user behavior. It's totally possible that a user clicking around (particularly on the playlist page) might very well introduce race conditions
+- Edgecase user behavior. It's totally possible that a user clicking around (particularly on the playlist page) might very well introduce race conditions or other unexpected behavior. I've done little to guard against this.
 
 # Feature Specifications
 
@@ -98,7 +100,7 @@ Evolve the landing page to autoplay videos as designed.
 
 - [x] A 5-second countdown appears between videos
 
-I can only apologize to anyone with a strong sense of frontend development and styling, I really tried to actually overlay the countdown over the player, but in the spirit of moving quickly and meeting our hard functional requirements I retreated to the implementation you see, showing the overlay countdown in the top right of the embed. This is of course something I would dig in on in a production context.
+I can only apologize to anyone with a strong sense of frontend development and styling, I really tried to actually overlay the countdown over the player, but in the spirit of moving quickly and meeting our hard functional requirements I retreated to the implementation you see, showing the overlay countdown in the top right of the embed. This is of course something I would dig in on with more time.
 
 - [x] While the video is playing, the video shows as "playing" in the queue
 
@@ -106,12 +108,11 @@ Again, my overlay styling is... not great. I was initially applying the playing 
 
 - [x] Autoplay is disabled after all videos have played once
 
-I wound up tracking this on the fly based on a value that increments as each video plays and gates the replaceWith() logic once it's reached the count of the visible videos available. This would be brittle in the face of broad user behavior, but it seems to work satisfactorily for a demo.
-
+I wound up tracking this on the fly based on a value that increments as each video plays and gates the replaceWith() logic once it's reached the count of the visible videos available. This would be brittle in the face of public user behavior, but it seems to stitch the unplayed videos together with enough continuity for a demo.
 
 - [x] Videos for autoplay are grabbed from queue's top, played videos are added to the bottom
 
-Approached as straight up DOM manipulation as the overlay countdown ends. Inelegant (a user in the wild might very well skip the countdown), but this is an MVP.
+Approached as straight up DOM manipulation when the overlay countdown ends. Inelegant (a user in the wild might very well skip the countdown), but this is an MVP.
 
 
 ![](./wireframes/playlist_next.png)
@@ -121,24 +122,17 @@ alas, I have very much betrayed this wireframe. After spending 40 minutes trying
 
 ## Implement hide and show videos for the owner dashboard
 
-
 - [x] Create an endpoint to manage the video's visibility
 
-I opted for a PATCH call, modifying just the videoVisibility value. I think I would expect this to be a PUT if I encountered it in the wild, but PATCH fit my understanding of the change I was trying to make (toggling a single value on an object that would be otherwise unchanged). It works just fine in my modern Chrome browser, but I might be more cautious and do more research to confirm that the PATCH method is supported in all the relevant browsers for a production service.
-
-
+I opted for a PATCH call, modifying just the videoVisibility value. I think I would expect this to be a PUT if I encountered it in the wild, but PATCH fit my understanding of the change I was trying to make (toggling a single value on an object that would be otherwise unchanged). It works just fine in my modern Chrome browser, but I might be more cautious and do more research to confirm that the PATCH method is supported broadly enough for a production service.
 
 - [x] Wire the endpoint to the eye toggle (strikethrough icon represents hidden)
 
-I chose to wire my patch endpoint to the existing click event listener in dashboard.js. Adding similar icon update logic to the DOMContentLoaded event listener prompted me to extract the parallel logic to a function called by both event listeners (you could totally make the case that this was premature: only the on load version of the logic needs to update every icon, I could have implemented more targeted logic for flipping the icon of the clicked button). If I had infinite time or expected to have someone else working on show/hide logic I might very well go back and unwind that consolidation.
-
+I chose to wire my patch endpoint to the existing click event listener in dashboard.js. Adding similar icon update logic to the DOMContentLoaded event listener prompted me to extract the parallel logic to a function called by both event listeners (you could totally make the case that this was premature: only the on load version of the logic needs to update every icon, I could have implemented more targeted logic for flipping the icon of the clicked button). If I had more time or expected to have someone else working on show/hide logic I might very well go back and unwind that consolidation.
 
 - [x] Update the playlist landing page to only render videos marked as visible
 
-Though rendering only videos marked as visible in the renderMedia() function was reasonably straightforward, I struggled a bit to avoid autoplaying a hidden first video in the playlist. That is, until I realized I was treating the Wistia embed document manipulation as sacrosanct: once I considered modifying it I stumbled onto the notion of a filtered object containing only the visible videos, and could use the first video in that object to instantiate the player without fear of playing a “hidden” video.
-
-
-SQL/db design modeling for Wistia take home
+Though rendering only videos marked as visible in the renderMedia() function was reasonably straightforward, I struggled a bit to avoid autoplaying a hidden first video in the playlist. That is until I realized I was treating the Wistia embed document manipulation as sacrosanct: once I considered modifying it I stumbled onto the notion of a filtered object containing only the visible videos, and could use the first video in that object to instantiate the player without fear of playing a “hidden” video.
 
 
 ## Design the database for "search by tag" for the owner dashboard
